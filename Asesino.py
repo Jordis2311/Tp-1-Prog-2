@@ -31,7 +31,7 @@ def main():
 	
 	# Ejemplo de como funciona este diccionario.
 	# Calculando la distancia entre Buenos Aires y Rosario:
-	print(diccionario_distancias["CABA"]["Rosario"])
+	print("diccionario_distancias['CABA']['Rosario'] == ",diccionario_distancias["CABA"]["Rosario"])
 
 
     # Dividimos la lista en dos, mayores por un lado y menores por el otro.
@@ -42,7 +42,18 @@ def main():
 
 	lista_jugadores_menores = listas_separadas_edad[1]
 
-	# Ahora ya tenemos lo necesario para empezar un torneo, creo.
+	# Dividimos las listas de jugadores en sublistas por region
+	lista_jugadores_mayores_region = dividirPorRegion(lista_jugadores_mayores)
+
+	lista_jugadores_menores_region = dividirPorRegion(lista_jugadores_menores)
+
+	# Ejemplo de que las listas estan divididas por region:
+	# Los primeros cuatro elementos de la primera lista, y los dos primeros de la segunda.
+	print("Lo que hay en la primera lista de listas\n",lista_jugadores_mayores_region[0][:4])
+	print("Lo que hay en la segunda\n", lista_jugadores_mayores_region[1][:2])
+
+
+	# Ok, ahora si, creo que ya tenemos todo "listo" para hacer el torneo.
 
 	# Salida
 	return 0
@@ -67,6 +78,32 @@ def parametrosArchivos():
     return argumentos_evaluados
 
 
+def dividirPorRegion(lista_jugadores):
+	lista_jugadores_region = []
+	iterador = 0
+	regiones = {}
+	for jugador in lista_jugadores:
+		
+		# Si ya existe una lista de dicha region, la actualiza.
+		if jugador[2] in regiones:
+			lista_jugadores_region[regiones[jugador[2]]].append(jugador)
+		# Si no existe una lista de dicha region, la crea.
+		else:
+			lista_jugadores_region += [[jugador]]
+			regiones.update([(jugador[2], iterador)])
+			iterador += 1
+
+	return lista_jugadores_region
+
+
+
+"""
+Esta funcion tiene dos fors, creo que es mucho,
+podriamos dividirla en dos funciones que cada una tenga un solo for.
+
+Podriamos hacer un corte donde se cierra el archivo y retornar dicha lista.
+"""
+
 def crearDiccionarioDistancias(archivo_distancias):
 	lista_distancias = []
 	lista_diccionarios = []
@@ -84,16 +121,17 @@ def crearDiccionarioDistancias(archivo_distancias):
 	# Cerramos el archivo porque no lo necesitamos mas.
 	archivo.close()
 
-	provincia = ""
+
+	region = ""
 	# Empieza en -1 ya que la primera vez que se ejecute sera siempre nuevo y seteara a 0.
 	iterador = -1
 	
 	for distancia in lista_distancias:
 		
 		# Si la region no esta en la lista la agrega y crea su diccionario. 
-		if provincia != distancia[0]:
+		if region != distancia[0]:
 			lista_diccionarios += [(distancia[0], dict([(distancia[1],distancia[2])]))]
-			provincia = distancia[0]
+			region = distancia[0]
 			iterador += 1
 
 		# Si la region ya esta en la lista, actualiza su diccionario con el nuevo valor. 
