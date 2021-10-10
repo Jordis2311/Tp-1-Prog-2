@@ -1,6 +1,6 @@
 #!/usr/bin/python
 # Authors: Jordi Sola, Alan Hergenreder
-# Last update: 09/10/2021
+# Last update: 10/10/2021
 
 
 # Modulos:
@@ -53,16 +53,18 @@ def main():
 	print("Lo que hay en la segunda\n", lista_jugadores_mayores_region[1][:2])
 
 
-	# Ok, ahora si, creo que ya tenemos todo "listo" para hacer el torneo.
+	Lista_ganadores_mayores = JuegoDelAsesino(lista_jugadores_mayores,diccionario_distancias)
 
 	# Salida
 	return 0
 
+#validarDatos crea una excepcion para aquellos casos en donde los datos ingresados no son los correctos
 def validarDatos():
     if not parametrosArchivos():
         raise ErrorParametros
 
-
+#parametroN: -> int
+#parametroN nos permite el ingreso de el numero N que sera utilizado como maxima distancia para el juego, el jugador puede cabiar el numero si se arrepintio de su decision
 def parametroN():
 	desicion = ""
 	while desicion != "1":
@@ -77,7 +79,9 @@ def parametrosArchivos():
         argumentos_evaluados = False
     return argumentos_evaluados
 
-
+#dividirPorRegion Lista[Jugadores] -> Lista[(Ciudad: String),Lista[Jugadores]]
+#dividirPorRegion toma una lista de jugadores y devuelve una lista de tuplas del tipo (Ciudad,Lista[Jugadores]) 
+# en donde se encuentran todos los jugadores ingresados separados por ciudades
 def dividirPorRegion(lista_jugadores):
 	lista_jugadores_region = []
 	iterador = 0
@@ -103,7 +107,7 @@ podriamos dividirla en dos funciones que cada una tenga un solo for.
 
 Podriamos hacer un corte donde se cierra el archivo y retornar dicha lista.
 """
-
+#crearDiccionarioDistancias: file -> {String:{String:int}}
 def crearDiccionarioDistancias(archivo_distancias):
 	lista_distancias = []
 	lista_diccionarios = []
@@ -150,6 +154,7 @@ funciones y hacer mas cosas llamando desde el main.
 
 Che se me fue la mano con esta funcion y queriendo sacarle un par de llamadas 
 la deje vacia...
+J- por lo que lei moviste todo al main asi que quedo medio inutil la funcion assassin
 
 """
 
@@ -185,22 +190,19 @@ def Assassin():
     #Se muestra la lista de ganadores
 	return 0
 
-def Torneo(Lista_jugadores,Lista_distancias):
-	#Hacer Una lista tuplas del tipo  (Ciudad,Lista de jugadores de esa ciudad) y separar a la lista_jugadores por ciudad
+def JuegoDelAsesino(Lista_de_jugadores,Diccionario_de_distancias):
 	print("UwU")
-	#Armar una lista de tuplas de jugadores enfrentamientos por ciudad del tipo (Jugador1,Jugador2)
-	#Cuando un jugador es elegido para enfrentamiento se elimina de la lista
+	#Crear El emparejamiento por ciudad
+	#Emparejamiento = parejasPorCiudad(Lista_de_jugadores)
+	#A la lista de los emparejamientos anterior unirle el resto de emparejamientos de aquellos que puedan
+	#Emparejamiento += parejasSobrantes(Lista_de_jugadores)
+	
+def parejas_por_ciudad(Lista):
+	iterador = 0
+	lista_de_parejas = []
 
-	#Armar enfrentamientos por jugadores cercanos y añadirlos a la lista de enfrentamientos
-
-	#Se realizan los enfrentamiento, se escribe en el archivo quien elimino a quien
-	#Se vuelven a añadir los ganadores a la lista de ciudades
-
-	#Se repite hasta que no sean posibles mas enfrentamientos
-
-	#Devuelve la lista de ganadores
-
-
+#separarListaEdad: Lista[Jugadores] -> (Lista[Jugadores],Lista[Jugadores])
+# toma la lista de jugadores totales y retorna una tupla de los jugadores separados por edad
 def separarListaEdad(lista):
     listas_separadas = ([],[])
     for jugador in lista:
@@ -211,7 +213,9 @@ def separarListaEdad(lista):
     return listas_separadas
 
 
-
+#crearListaJugadores: file -> Lista[Jugadores]
+#Recibe el archivo que contiene a todos los jugadores y devuelve una lista de tuplas que representan a cada jugador
+#Las tuplas son del formato (nombre: string,Edad: int,Ciudad: string)
 def crearListaJugadores(archivo_jugadores):
     # Abrimos el archivo
     archivo = open(archivo_jugadores,"r+")
@@ -252,10 +256,19 @@ y las funciones como
 nombreFuncion()
 
 Creo que es bastante legible, ¿que te parece?
-
+J- Se entiende perfectamente
 
 Pregunta:
 ¿Deberiamos abrir el archivo resultante de texto una y otra vez a medida de que las rondas avanzan?
+J- Creo que podemos durante la funcion que determina con la lista de enfrentamientos quien gana y quien pierde, abrir el archivo al inicio de esa funcion 
+y cuando se calcula cada resultado escribir quien mato a quien y al final de esa funcion cerrarlo devuelta, asi solo lo abririamos y cerrariamos 6 veces
+1- para escribir juego de mayores
+2- para escribir las acciones (solo necesitariamos abrila 1 vez)
+3- para escribir ganadores de mayores
+4- escribir juego de menores
+5- escribir acciones
+6- escribir ganadores
+
 ¿O podriamos guardar una lista con todas las jugadas y luego hacer una sola escritura?
 
 Respuesta acordada:
