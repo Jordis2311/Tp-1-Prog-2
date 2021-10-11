@@ -199,7 +199,9 @@ def Assassin():
 def JuegoDelAsesino(Lista_de_jugadores,Diccionario_de_distancias,n,archivo):
 	print("UwU")
 	Final = True
+	iterador = 0
 	while (Final):
+		print("Turno ",iterador)
 		Turno_parte_1 = parejas_por_ciudad(Lista_de_jugadores)
 		lista_de_parejas = Turno_parte_1[0]
 		Turno_parte_2 = emparejamientosSobrantes(Turno_parte_1[1],Diccionario_de_distancias,n)
@@ -209,9 +211,8 @@ def JuegoDelAsesino(Lista_de_jugadores,Diccionario_de_distancias,n,archivo):
 		lista_sobrevivientes = combate(lista_de_parejas,archivo)
 		lista_sobrevivientes += Turno_parte_2[1]
 		Lista_de_jugadores = dividirPorRegion(lista_sobrevivientes)
+		iterador += 1
 	return lista_sobrevivientes
-
-
 
 def combate(lista_parejas, archivo_resultado):
     lista_ganadores = []
@@ -225,8 +226,6 @@ def combate(lista_parejas, archivo_resultado):
         archivo_resultado.write(pareja[ganador] + " elimino a " + pareja[perdedor] + "\n")
     return lista_ganadores        
 
-
-
 def parejas_por_ciudad(Jugadores_Totales):
 	lista_de_parejas = []
 	jugadores_sobrantes = []
@@ -238,7 +237,7 @@ def parejas_por_ciudad(Jugadores_Totales):
 			ciudad.remove(jugador_2)
 			lista_de_parejas += [(jugador_1,jugador_2)]
 		if(len(ciudad) == 1):
-			jugadores_sobrantes += ciudad[0]
+			jugadores_sobrantes += ciudad
 	return (lista_de_parejas,jugadores_sobrantes)
 
 
@@ -247,11 +246,11 @@ def emparejamientosSobrantes(lista_jugadores_sobrantes, diccionario_distancias, 
 	lista_parejas = []
 	sobrantes_de_las_sobras = []
 	cantidad_jugadores = len(lista_jugadores_sobrantes)  
-	iterador = 0 
 	while cantidad_jugadores > 1:
 		
 		# Elegimos uno y lo sacamos
-		eleccion_1 = random.randrange(cantidad_jugadores)
+		eleccion_1 = lista_jugadores_sobrantes[random.randrange(cantidad_jugadores)]
+		print(eleccion_1, "eleccion 1")
 		cantidad_jugadores -= 1
 		lista_jugadores_sobrantes.remove(eleccion_1)
 
@@ -276,8 +275,13 @@ def emparejamientosSobrantes(lista_jugadores_sobrantes, diccionario_distancias, 
 
 def preferenciaDistancias(objetivo, lista_jugadores, diccionario_distancias):
 	lista_distancias = []
+
+	print(objetivo, "objetivo")
+	print(lista_jugadores, "Lista de jugadores")
+
+	print(diccionario_distancias[objetivo[2]][lista_jugadores[0][2]])
 	for jugador in lista_jugadores:
-		lista_distancias += [diccionario_distancias[objetivo][jugador[2]]]
+		lista_distancias += [diccionario_distancias[objetivo[2]][jugador[2]]]
 	return lista_distancias		
 
 
