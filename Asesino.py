@@ -190,7 +190,7 @@ def Assassin():
     #Se muestra la lista de ganadores
 	return 0
 
-def JuegoDelAsesino(Lista_de_jugadores,Diccionario_de_distancias,n):
+def JuegoDelAsesino(Lista_de_jugadores,Diccionario_de_distancias,n,archivo):
 	print("UwU")
 	Final = True
 	while (Final):
@@ -204,6 +204,21 @@ def JuegoDelAsesino(Lista_de_jugadores,Diccionario_de_distancias,n):
 		lista_sobrevivientes += Turno_parte_2[1]
 		Lista_de_jugadores = dividirPorRegion(lista_sobrevivientes)
 	return lista_sobrevivientes
+
+
+
+def combate(lista_parejas, archivo_resultado):
+    lista_ganadores = []
+    for pareja in lista_parejas:
+        
+        # Decidimos aleatoriamente quien gana y consecuentemente quien pierde.
+        ganador = random.randrange(1)
+        perdedor = 1 - ganador
+        lista_ganadores += pareja[ganador]
+
+        archivo_resultado.write(pareja[ganador] + " elimino a " + pareja[perdedor] + "\n")
+    return lista_ganadores        
+
 
 
 def parejas_por_ciudad(Jugadores_Totales):
