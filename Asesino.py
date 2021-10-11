@@ -53,7 +53,7 @@ def main():
 	print("Lo que hay en la segunda\n", lista_jugadores_mayores_region[1][:2])
 
 
-	Lista_ganadores_mayores = JuegoDelAsesino(lista_jugadores_mayores,diccionario_distancias)
+	Lista_ganadores_mayores = JuegoDelAsesino(lista_jugadores_mayores,diccionario_distancias,n)
 
 	# Salida
 	return 0
@@ -190,13 +190,22 @@ def Assassin():
     #Se muestra la lista de ganadores
 	return 0
 
-def JuegoDelAsesino(Lista_de_jugadores,Diccionario_de_distancias):
+def JuegoDelAsesino(Lista_de_jugadores,Diccionario_de_distancias,n):
 	print("UwU")
-	#Crear El emparejamiento por ciudad
-	#Emparejamiento = parejasPorCiudad(Lista_de_jugadores)
-	#A la lista de los emparejamientos anterior unirle el resto de emparejamientos de aquellos que puedan
-	#Emparejamiento += parejasSobrantes(Lista_de_jugadores)
-	
+	Final = True
+	while (Final):
+		Turno_parte_1 = parejas_por_ciudad(Lista_de_jugadores)
+		lista_de_parejas = Turno_parte_1[0]
+		Turno_parte_2 = emparejamientosSobrantes(Turno_parte_1[1],Diccionario_de_distancias,n)
+		lista_de_parejas += Turno_parte_2[0]
+		if(lista_de_parejas == []):
+			Final = False
+		lista_sobrevivientes = combate(lista_de_parejas,archivo)
+		lista_sobrevivientes += Turno_parte_2[1]
+		Lista_de_jugadores = dividirPorRegion(lista_sobrevivientes)
+	return lista_sobrevivientes
+
+
 def parejas_por_ciudad(Jugadores_Totales):
 	lista_de_parejas = []
 	jugadores_sobrantes = []
