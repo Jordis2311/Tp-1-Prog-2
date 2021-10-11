@@ -6,6 +6,7 @@
 # Modulos:
 import sys
 from random import *
+import random
 
 # Excepciones
 class ErrorParametros(Exception):
@@ -52,8 +53,13 @@ def main():
 	print("Lo que hay en la primera lista de listas\n",lista_jugadores_mayores_region[0][:4])
 	print("Lo que hay en la segunda\n", lista_jugadores_mayores_region[1][:2])
 
+	archivo_resultado = open("juego_del_asesino.txt","a")
 
-	Lista_ganadores_mayores = JuegoDelAsesino(lista_jugadores_mayores,diccionario_distancias,n)
+	Lista_ganadores_mayores = JuegoDelAsesino(lista_jugadores_mayores_region, diccionario_distancias, n, archivo_resultado)
+
+	archivo_resultado.close()
+
+
 
 	# Salida
 	return 0
