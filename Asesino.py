@@ -212,6 +212,56 @@ def parejas_por_ciudad(Jugadores_Totales):
 	return (lista_de_parejas,jugadores_sobrantes)
 
 
+# volver a meter a los jugadores en su sublista   
+def emparejamientosSobrantes(lista_jugadores_sobrantes, diccionario_distancias, n):
+	lista_parejas = []
+	sobrantes_de_las_sobras = []
+	cantidad_jugadores = len(lista_jugadores_sobrantes)  
+	iterador = 0 
+	while cantidad_jugadores > 1:
+		
+		# Elegimos uno y lo sacamos
+		eleccion_1 = random.randrange(cantidad_jugadores)
+		cantidad_jugadores -= 1
+		lista_jugadores_sobrantes.remove(eleccion_1)
+
+		# Calculamos la distancia al resto de los jugadores.
+		lista_cercanias = preferenciaDistancias(eleccion_1, lista_jugadores_sobrantes, diccionario_distancias)
+
+		# Elegimos el candidato con la menor distancia.
+		eleccion_2 = jugadorMasCercano(lista_jugadores_sobrantes, lista_cercanias, n)
+
+		# Si el candidato es valido, lo empareja.
+		if eleccion_2 != 0:
+			lista_parejas += [(eleccion_1, eleccion_2)]
+		
+		# Sino, lo descarta.
+		else:
+			sobrantes_de_las_sobras += [eleccion_1]
+			lista_jugadores_sobrantes.remove(eleccion_1)
+
+
+		return (lista_parejas, sobrantes_de_las_sobras)
+
+
+def preferenciaDistancias(objetivo, lista_jugadores, diccionario_distancias):
+	lista_distancias = []
+	for jugador in lista_jugadores:
+		lista_distancias += [diccionario_distancias[objetivo][jugador[2]]]
+	return lista_distancias		
+
+
+def jugadorMasCercano(lista_jugadores, lista_distancias, n):
+	candidato = 0
+	menor_distancia = min(lista_distancias)
+	indice_menor_distancia = lista_distancias.index(menor_distancia)
+	jugador_mas_cercano = lista_jugadores.index(indice_menor_distancia)
+	if menor_distancia <= n:
+		candidato = jugador_mas_cercano
+	return candidato
+
+
+
 #separarListaEdad: Lista[Jugadores] -> (Lista[Jugadores],Lista[Jugadores])
 # toma la lista de jugadores totales y retorna una tupla de los jugadores separados por edad
 def separarListaEdad(lista):
