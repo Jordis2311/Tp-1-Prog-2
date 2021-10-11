@@ -5,7 +5,7 @@
 
 # Modulos:
 import sys
-
+from random import *
 
 # Excepciones
 class ErrorParametros(Exception):
@@ -63,7 +63,7 @@ def validarDatos():
     if not parametrosArchivos():
         raise ErrorParametros
 
-#parametroN: -> int
+#parametroN: None -> int
 #parametroN nos permite el ingreso de el numero N que sera utilizado como maxima distancia para el juego, el jugador puede cabiar el numero si se arrepintio de su decision
 def parametroN():
 	desicion = ""
@@ -79,7 +79,7 @@ def parametrosArchivos():
         argumentos_evaluados = False
     return argumentos_evaluados
 
-#dividirPorRegion Lista[Jugadores] -> Lista[(Ciudad: String),Lista[Jugadores]]
+#dividirPorRegion 
 #dividirPorRegion toma una lista de jugadores y devuelve una lista de tuplas del tipo (Ciudad,Lista[Jugadores]) 
 # en donde se encuentran todos los jugadores ingresados separados por ciudades
 def dividirPorRegion(lista_jugadores):
@@ -197,9 +197,20 @@ def JuegoDelAsesino(Lista_de_jugadores,Diccionario_de_distancias):
 	#A la lista de los emparejamientos anterior unirle el resto de emparejamientos de aquellos que puedan
 	#Emparejamiento += parejasSobrantes(Lista_de_jugadores)
 	
-def parejas_por_ciudad(Lista):
-	iterador = 0
+def parejas_por_ciudad(Jugadores_Totales):
 	lista_de_parejas = []
+	jugadores_sobrantes = []
+	for ciudad in Jugadores_Totales:
+		while (len(ciudad) > 1):
+			jugador_1 = ciudad[random.randrange(len(ciudad))]
+			ciudad.remove(jugador_1)
+			jugador_2 = ciudad[random.randrange(len(ciudad))]
+			ciudad.remove(jugador_2)
+			lista_de_parejas += [(jugador_1,jugador_2)]
+		if(len(ciudad) == 1):
+			jugadores_sobrantes += ciudad[0]
+	return (lista_de_parejas,jugadores_sobrantes)
+
 
 #separarListaEdad: Lista[Jugadores] -> (Lista[Jugadores],Lista[Jugadores])
 # toma la lista de jugadores totales y retorna una tupla de los jugadores separados por edad
