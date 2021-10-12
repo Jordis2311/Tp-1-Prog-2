@@ -5,7 +5,6 @@
 
 # Modulos:
 import sys
-from random import *
 import random
 
 # Excepciones
@@ -29,10 +28,6 @@ def main():
 
 	# Creamos un diccionario de diccionarios con las distancias entre cada provincia.
 	diccionario_distancias = crearDiccionarioDistancias(archivo_distancias)
-	
-	# Ejemplo de como funciona este diccionario.
-	# Calculando la distancia entre Buenos Aires y Rosario:
-	print("diccionario_distancias['CABA']['Rosario'] == ",diccionario_distancias["CABA"]["Rosario"])
 
 
     # Dividimos la lista en dos, mayores por un lado y menores por el otro.
@@ -48,16 +43,18 @@ def main():
 
 	lista_jugadores_menores_region = dividirPorRegion(lista_jugadores_menores)
 
-	# Ejemplo de que las listas estan divididas por region:
-	# Los primeros cuatro elementos de la primera lista, y los dos primeros de la segunda.
-	print("Lo que hay en la primera lista de listas\n",lista_jugadores_mayores_region[0][:4])
-	print("Lo que hay en la segunda\n", lista_jugadores_mayores_region[1][:2])
 
-	archivo_resultado = open("juego_del_asesino.txt","a")
+	# Creamos el archivo resultado del juego.
+	archivo_resultado = open("juego_del_asesino.txt","w")
 
-	Lista_ganadores_mayores = JuegoDelAsesino(lista_jugadores_mayores_region, diccionario_distancias, n, archivo_resultado)
+	print("El juego se esta llevando acabo, por favor espere...")
+
+	lista_ganadores_mayores = JuegoDelAsesino(lista_jugadores_mayores_region, diccionario_distancias, n, archivo_resultado)
+
+	#mencionGanadores()
 
 	archivo_resultado.close()
+
 
 
 
@@ -93,7 +90,6 @@ def dividirPorRegion(lista_jugadores):
 	iterador = 0
 	regiones = {}
 	for jugador in lista_jugadores:
-		
 		# Si ya existe una lista de dicha region, la actualiza.
 		if jugador[2] in regiones:
 			lista_jugadores_region[regiones[jugador[2]]].append(jugador)
@@ -197,16 +193,15 @@ def Assassin():
 	return 0
 
 def JuegoDelAsesino(Lista_de_jugadores,Diccionario_de_distancias,n,archivo):
-	print("UwU")
+
 	Final = True
 	iterador = 0
 	while (Final):
-		print("Turno ",iterador)
 		Turno_parte_1 = parejas_por_ciudad(Lista_de_jugadores)
 		lista_de_parejas = Turno_parte_1[0]
 		Turno_parte_2 = emparejamientosSobrantes(Turno_parte_1[1],Diccionario_de_distancias,n)
 		lista_de_parejas += Turno_parte_2[0]
-		if(lista_de_parejas == []):
+		if lista_de_parejas == []:
 			Final = False
 		lista_sobrevivientes = combate(lista_de_parejas,archivo)
 		lista_sobrevivientes += Turno_parte_2[1]
@@ -219,11 +214,11 @@ def combate(lista_parejas, archivo_resultado):
     for pareja in lista_parejas:
         
         # Decidimos aleatoriamente quien gana y consecuentemente quien pierde.
-        ganador = random.randrange(1)
+        ganador = random.randrange(2)
         perdedor = 1 - ganador
-        lista_ganadores += pareja[ganador]
+        lista_ganadores += [pareja[ganador]]
 
-        archivo_resultado.write(pareja[ganador] + " elimino a " + pareja[perdedor] + "\n")
+        archivo_resultado.write(pareja[ganador][0] + " elimino a " + pareja[perdedor][0] + "\n")
     return lista_ganadores        
 
 def parejas_por_ciudad(Jugadores_Totales):
@@ -250,7 +245,6 @@ def emparejamientosSobrantes(lista_jugadores_sobrantes, diccionario_distancias, 
 		
 		# Elegimos uno y lo sacamos
 		eleccion_1 = lista_jugadores_sobrantes[random.randrange(cantidad_jugadores)]
-		print(eleccion_1, "eleccion 1")
 		cantidad_jugadores -= 1
 		lista_jugadores_sobrantes.remove(eleccion_1)
 
@@ -267,21 +261,23 @@ def emparejamientosSobrantes(lista_jugadores_sobrantes, diccionario_distancias, 
 		# Sino, lo descarta.
 		else:
 			sobrantes_de_las_sobras += [eleccion_1]
-			lista_jugadores_sobrantes.remove(eleccion_1)
 
-
-		return (lista_parejas, sobrantes_de_las_sobras)
+	return (lista_parejas, sobrantes_de_las_sobras)
 
 
 def preferenciaDistancias(objetivo, lista_jugadores, diccionario_distancias):
 	lista_distancias = []
 
-	print(objetivo, "objetivo")
-	print(lista_jugadores, "Lista de jugadores")
-
-	print(diccionario_distancias[objetivo[2]][lista_jugadores[0][2]])
 	for jugador in lista_jugadores:
-		lista_distancias += [diccionario_distancias[objetivo[2]][jugador[2]]]
+		
+		if objetivo[2] in diccionario_distancias:
+			if jugador[2] in diccionario_distancias[objetivo[2]]:
+				lista_distancias += [diccionario_distancias[objetivo[2]][jugador[2]]]
+			else:
+				lista_distancias += [diccionario_distancias[jugador[2]][objetivo[2]]]
+		else:
+			lista_distancias += [diccionario_distancias[jugador[2]][objetivo[2]]]
+
 	return lista_distancias		
 
 
@@ -289,7 +285,7 @@ def jugadorMasCercano(lista_jugadores, lista_distancias, n):
 	candidato = 0
 	menor_distancia = min(lista_distancias)
 	indice_menor_distancia = lista_distancias.index(menor_distancia)
-	jugador_mas_cercano = lista_jugadores.index(indice_menor_distancia)
+	jugador_mas_cercano = lista_jugadores[indice_menor_distancia]
 	if menor_distancia <= n:
 		candidato = jugador_mas_cercano
 	return candidato
