@@ -18,6 +18,7 @@ con una sola funcion?
 
 ¿Como es la signatura de las excepciones? (clases, buscar: ErrorParametros)
 ¿Como es la signatura de los diccionarios?
+¿Como es la signatura de los archivos abiertos?
 
 ¿Deberiamos haber separado las funciones en distintos archivos como haciamos en C?
 Me refiero a usar un archivo para la signatura, otro para la definicion, y otro para usar todo.
@@ -77,11 +78,21 @@ Donde:
 Ya sabemos que representa jajaja.
 
 
+#---------#
+# Errores #
+#---------#
+
 Si, si lo se, no hay ni un solo test, esta mal, esta horrible y seguro nos va a dar con un caño
 cuando vea que no testeamos ni una sola de las funciones, pero con algo de esfuerzo
 quiza llegue a testear todo mañana en la mañana antes de la consulta.
 
+Hay un error por el cual si el N ingresado es muy alto (1000) los enfrentamientos
+continuan hasta que no hay jugadores. El ulitmo jugador se enfrenta a si mismo y se suicida.
+
+Hay que corregir la signatura de los archivo_resultado, no son string, no se que son.
+
 Decidimos esto y aquello, tambien esta otra cosa.
+
 
 blablabla
 blabla
@@ -89,6 +100,17 @@ blabla bla bla
 
 blablablabla
 
+
+#----------#
+# Opcional #
+#----------#
+
+Agregar una ruleta rusa aleatoria para generar muertes de diferentes tipos entre los participantes.
+Si te la queres re volar, permiti que se ingrese un tercer archivo que sea armas.txt o muertes.txt
+para que se seleccione aleatoriamente desde esa fuente.
+
+Agregar una mencion honorifica para el jugador que mate a Guimpel, o un
+rastro de las victimas de Guimpel, o un festejo si Guimpel gana el juego.
 
 """
 
@@ -121,8 +143,12 @@ def main():
 	# Distancias #
 	#------------#
 
+
+	# Creamos una lista con las distancias entre cada region.
+	lista_distancias = crearListaDistancias(archivo_distancias)
+
 	# Creamos un diccionario de diccionarios con las distancias entre cada provincia.
-	diccionario_distancias = crearDiccionarioDistancias(archivo_distancias)
+	diccionario_distancias = crearDiccionarioDistancias(lista_distancias)
 
 
 	#-----------#
@@ -155,14 +181,14 @@ def main():
 	archivo_resultado = open("juego_del_asesino.txt","w")
 
 	# Juego de los mayores.
-	archivo_resultado.write("Mayores de edad\n")
+	archivo_resultado.write("Mayores de edad\n\n")
 	lista_ganadores_mayores = juegoDelAsesino(lista_jugadores_mayores_region, diccionario_distancias, n, archivo_resultado)
-	#mencionGanadores(lista_ganadores_mayores)
+	mencionGanadores(lista_ganadores_mayores, archivo_resultado)
 
 	# Juego de los menoes.
-	archivo_resultado.write("\n\nMenores de edad\n")
+	archivo_resultado.write("\n\nMenores de edad\n\n")
 	lista_ganadores_menores = juegoDelAsesino(lista_jugadores_menores_region, diccionario_distancias, n, archivo_resultado)
-	#mencionGanadores(lista_ganadores_mayores)
+	mencionGanadores(lista_ganadores_menores, archivo_resultado)
 
 
 	# Una vez que el juego termina, cerramos el archivo.
@@ -173,7 +199,6 @@ def main():
 
 	# Arbitrario
 	return 0
-
 
 
 #-------------#
@@ -397,7 +422,7 @@ def preferenciaDistancias(objetivo, lista_jugadores, diccionario_distancias):
 # jugadorMasCercano: List[Jugador] List[Int] Int -> Int || Jugador
 # TOMA una lista de jugadores, una lista de enteros que representan distancias
 # y una distancia maxima posible.
-# EVALUA si la menor distancia de la lista es menor que la maxima distancia posible.
+# EVALUA si la menor distancia de la lista es menor o igual que la maxima distancia posible.
 # Si esto ocurre, devuelve el jugador correspondiente a dicha distancia.
 # Si no, devuelve un entero (0), representando que no tiene candidato.
 def jugadorMasCercano(lista_jugadores, lista_distancias, n):
@@ -462,5 +487,11 @@ def crearListaJugadores(archivo_jugadores):
     return lista_jugadores
 
 
+# mencionGanadores: List[Jugador] -> None
+# TOMA una lista de jugadores y un archivo donde se escribira su mencion.
+def mencionGanadores(lista_jugadores, archivo_resultado):
+	archivo_resultado.write("\n\nLos siguientes jugadores ganaron en su region:\n\n")
+	for jugador in lista_jugadores:
+		archivo_resultado.write(jugador[0] + ", ")
 
 main()
