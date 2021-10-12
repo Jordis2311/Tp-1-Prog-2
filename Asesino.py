@@ -1,37 +1,138 @@
 #!/usr/bin/python
 # Authors: Jordi Sola, Alan Hergenreder
-# Last update: 10/10/2021
+# Last update: 12/10/2021
+
+"""
+Espacio para explicar como hicimos todo :D
+
+Preguntas para Guimpel:
+¿Los argumentos que se pasan como script al programa cuentan como variables globales?
+
+En caso de que se de un enfrentamiento entre jugadores de diferentes regiones,
+¿deberia haber preferencia por distancia objetiva (general) entre todos los jugadores?
+
+¿Como se hace para que el programa ejecute el main directamente sin llamarlo?
+
+¿Esta bien abusar del hecho de que en el estilo imperativo podemos devolver muchas cosas
+con una sola funcion?
+
+¿Como es la signatura de las excepciones? (clases, buscar: ErrorParametros)
+¿Como es la signatura de los diccionarios?
+
+¿Deberiamos haber separado las funciones en distintos archivos como haciamos en C?
+Me refiero a usar un archivo para la signatura, otro para la definicion, y otro para usar todo.
+
+¿Se puede modificar la forma en que un lenguaje esta hecho? 
+Me refiero a romper las reglas de sintaxis que son evaluadas, o definir otras nuevas.
+
+¿Esta al tanto de que tranquilamente deberia haber googleado todas estas preguntas
+pero decidi dejarlas para que me responda?
+
+¿Alguna vez jugo este mismo juego en la vida real?
+
+¿Me recomienda algun libro para leer? (me quede sin preguntas jaja)
+
+#-----------------------------------#
+# Representacion de la informacion: #
+#-----------------------------------#
+
+Representamos las distancias entre regiones con una tupla (o tripla) de la siguiente forma:
+
+Distancia == (String, String, Float)
+
+Donde:
+La primera componente representa el nombre de una region.
+La segunda componente representa el nombre de una region.
+La tercera componente representa la distancia entre ambas regiones. 
+(¿Unidad? Kilometros, milimetros, codos)
+
+Para facilitar el acceso a las distancias entre regiones
+creamos un diccionario anidado de la siguiente forma:
+
+DiccionarioDistancias == {String: {String: Float}}
+
+Donde:
+La clave del primer diccionario representa una region.
+El valor que corresponde a dicha clave es un segundo diccionario.
+La clave del segundo diccionario representa una region.
+El valor asociado a este segundo diccionario es la distancia entre
+la primera y segunda region.
 
 
-# Modulos:
+Representamos a cada jugador con una tupla (o tripla) de la siguiente forma:
+
+Jugador == (String,Int,String)
+
+Donde:
+La primera componente representa el nombre del jugador.
+La segunda componente representa la edad del jugador.
+La tercera componente representa la region del jugador.
+
+
+Representamos una pareja de jugadores con una tupla (o dupla) de la siguiente forma:
+
+Pareja == (Jugador, Jugador)
+
+Donde:
+Ya sabemos que representa jajaja.
+
+
+Si, si lo se, no hay ni un solo test, esta mal, esta horrible y seguro nos va a dar con un caño
+cuando vea que no testeamos ni una sola de las funciones, pero con algo de esfuerzo
+quiza llegue a testear todo mañana en la mañana antes de la consulta.
+
+Decidimos esto y aquello, tambien esta otra cosa.
+
+blablabla
+blabla
+blabla bla bla
+
+blablablabla
+
+
+"""
+
+
+
+
+#----------#
+# Modulos: #
+#----------#
+
 import sys
 import random
 
-# Excepciones
-class ErrorParametros(Exception):
-    # Error al pasar una cantidad de parametros diferente de la esperada.
-    def __init__(self, message="Los parametros esperados son: <archivo_jugadores> <archivo_distancias>"):
-        self.message = message
-        super().__init__(self.message)
-
 def main():
+
+	#------------------#
+	# Datos de entrada #
+	#------------------#
 
 	# Validamos los archivos que se toman como parametro
 	validarDatos()
 	archivo_jugadores = sys.argv[1]
 	archivo_distancias = sys.argv[2]
 
+	# Pedimos el parametro n para saber la maxima distancia a la que se da un enfrentamiento.
 	n = parametroN()
 
-	# Creamos una lista con todos los jugadores.
-	lista_jugadores_total = crearListaJugadores(archivo_jugadores)
+
+	#------------#
+	# Distancias #
+	#------------#
 
 	# Creamos un diccionario de diccionarios con las distancias entre cada provincia.
 	diccionario_distancias = crearDiccionarioDistancias(archivo_distancias)
 
 
-    # Dividimos la lista en dos, mayores por un lado y menores por el otro.
+	#-----------#
+	# Jugadores #
+	#-----------#
 
+	# Creamos una lista con todos los jugadores.
+	lista_jugadores_total = crearListaJugadores(archivo_jugadores)
+
+    # Dividimos la lista en dos, mayores por un lado y menores por el otro.
 	listas_separadas_edad = separarListaEdad(lista_jugadores_total)
 
 	lista_jugadores_mayores = listas_separadas_edad[0]
@@ -44,30 +145,66 @@ def main():
 	lista_jugadores_menores_region = dividirPorRegion(lista_jugadores_menores)
 
 
-	# Creamos el archivo resultado del juego.
-	archivo_resultado = open("juego_del_asesino.txt","w")
+	#----------------------#
+	# Desarrollo del juego #
+	#----------------------#
 
 	print("El juego se esta llevando acabo, por favor espere...")
 
-	lista_ganadores_mayores = JuegoDelAsesino(lista_jugadores_mayores_region, diccionario_distancias, n, archivo_resultado)
+	# Creamos el archivo resultado del juego.
+	archivo_resultado = open("juego_del_asesino.txt","w")
 
-	#mencionGanadores()
+	# Juego de los mayores.
+	archivo_resultado.write("Mayores de edad\n")
+	lista_ganadores_mayores = juegoDelAsesino(lista_jugadores_mayores_region, diccionario_distancias, n, archivo_resultado)
+	#mencionGanadores(lista_ganadores_mayores)
 
+	# Juego de los menoes.
+	archivo_resultado.write("\n\nMenores de edad\n")
+	lista_ganadores_menores = juegoDelAsesino(lista_jugadores_menores_region, diccionario_distancias, n, archivo_resultado)
+	#mencionGanadores(lista_ganadores_mayores)
+
+
+	# Una vez que el juego termina, cerramos el archivo.
 	archivo_resultado.close()
 
+	# Avisamos que el archivo resultado fue escrito.
+	print("Se creo el archivo juego_del_asesino.txt")
 
-
-
-	# Salida
+	# Arbitrario
 	return 0
 
-#validarDatos crea una excepcion para aquellos casos en donde los datos ingresados no son los correctos
+
+
+#-------------#
+# Excepciones #
+#-------------#
+
+# No se como se hace la signatura de este tipo de cosas.
+
+class ErrorParametros(Exception):
+    # Error al pasar una cantidad de parametros diferente de la esperada.
+    def __init__(self, message="Los parametros esperados son: <archivo_jugadores> <archivo_distancias>"):
+        self.message = message
+        super().__init__(self.message)
+
+
+#-----------#
+# Funciones #
+#-----------#
+
+
+# validarDatos: None -> None
+# Evalua si la cantidad de argumentos pasados al programa son correctos.
+# En caso de que no lo sean, genera una excepcion.
 def validarDatos():
-    if not parametrosArchivos():
+    if len(sys.argv) != 3:
         raise ErrorParametros
 
-#parametroN: None -> int
-#parametroN nos permite el ingreso de el numero N que sera utilizado como maxima distancia para el juego, el jugador puede cabiar el numero si se arrepintio de su decision
+
+# parametroN: None -> Int
+# DEVUELVE un entero ingresado por teclado que representa
+# la maxima distancia a la que puede realizarse un enfrentamiento entre regiones.
 def parametroN():
 	desicion = ""
 	while desicion != "1":
@@ -76,15 +213,10 @@ def parametroN():
 	return n
 
 
-def parametrosArchivos():
-    argumentos_evaluados = True
-    if len(sys.argv) != 3:
-        argumentos_evaluados = False
-    return argumentos_evaluados
-
-#dividirPorRegion 
-#dividirPorRegion toma una lista de jugadores y devuelve una lista de tuplas del tipo (Ciudad,Lista[Jugadores]) 
-# en donde se encuentran todos los jugadores ingresados separados por ciudades
+# dividirPorRegion: List[Jugador] -> List[List[Jugador]]
+# TOMA una lista de jugadores.
+# DEVUELVE una lista de listas de jugadores donde cada sublista contiene
+# jugadores de la misma region.
 def dividirPorRegion(lista_jugadores):
 	lista_jugadores_region = []
 	iterador = 0
@@ -102,17 +234,12 @@ def dividirPorRegion(lista_jugadores):
 	return lista_jugadores_region
 
 
-
-"""
-Esta funcion tiene dos fors, creo que es mucho,
-podriamos dividirla en dos funciones que cada una tenga un solo for.
-
-Podriamos hacer un corte donde se cierra el archivo y retornar dicha lista.
-"""
-#crearDiccionarioDistancias: file -> {String:{String:int}}
-def crearDiccionarioDistancias(archivo_distancias):
+# crearListaDistancias: String -> List[Distancias]
+# TOMA un string que representa el nombre del archivo de distancias.
+# DEVUELVE una lista de tuplas que indican la distancia
+def crearListaDistancias(archivo_distancias):
+	
 	lista_distancias = []
-	lista_diccionarios = []
 	archivo = open(archivo_distancias, "r+")
 	for linea in archivo:
 		
@@ -127,7 +254,16 @@ def crearDiccionarioDistancias(archivo_distancias):
 	# Cerramos el archivo porque no lo necesitamos mas.
 	archivo.close()
 
+	# Devolvemos la lista de distancias.
+	return lista_distancias
 
+
+# crearDiccionarioDistancias: List[Distancia] -> DiccionarioDistancias
+# TOMA una lista de distancias
+# DEVUELVE un diccionario anidado con las distancias entre regiones.
+def crearDiccionarioDistancias(lista_distancias):
+	
+	lista_diccionarios = []
 	region = ""
 	# Empieza en -1 ya que la primera vez que se ejecute sera siempre nuevo y seteara a 0.
 	iterador = -1
@@ -148,67 +284,31 @@ def crearDiccionarioDistancias(archivo_distancias):
 	return dict(lista_diccionarios)
 
 
+# juegoDelAsesino: Lista[Jugador] DiccionarioDistancias Int String -> List[Jugador]
+# TOMA una lista de jugadores, un diccionario de distancias, una maxima distancia y
+# el nombre del archivo resultante.
+# DEVUELVE una lista que representa los ganadores del juego. 
+def juegoDelAsesino(Lista_de_jugadores,Diccionario_de_distancias,n,archivo):
 
-"""
-Habría que renombrar esta funcion.
-Creo que hay muchas llamadas a funciones aca, tal vez podriamos dividir las 
-funciones y hacer mas cosas llamando desde el main.
-
-Che se me fue la mano con esta funcion y queriendo sacarle un par de llamadas 
-la deje vacia...
-J- por lo que lei moviste todo al main asi que quedo medio inutil la funcion assassin
-
-"""
-
-def Assassin():
-    #No olvidar Cameo de Guimpel
-
-    #Leer archivo de jugadores, guardarlos en una lista de tuplas: Lista_Jugadores[]
-    #Cada Jugador es una tupla de forma (NOMBRE,EDAD,CIUDAD)
-
-    #Leer archivo de Distancias, guardalas en listas: Lista_distancias[]
-    #lista_ciudades_distancia = crear_lista_ciudades()
-        
-    #Cada distancia es una tupla de forma (CIUDAD 1, CIUDAD 2, Distancia)
-        
-    #Tomar N (distancia en la que se puede asesinar)
-
-    #Lista_J_Mayores = crear_lista_mayores(lista_jugadores_total)
-
-    #Lista_J_Menores = crear_lista_menores(lista_jugadores_total)
-
-    #Quedarian 2 Listas de jugadores, Lista_J_Mayores, Lista_J_Menores
-
-
-
-    #Comienza el torneo con la lista de mayores 
-    #Torneo(Lista_J_Mayores, Lista_Distancias)
-        
-    #Se muestra la lista de ganadores
-
-    #Torneo de menores
-    #Torneo(Lista_J_Menores, Lista_Distancias)
-
-    #Se muestra la lista de ganadores
-	return 0
-
-def JuegoDelAsesino(Lista_de_jugadores,Diccionario_de_distancias,n,archivo):
-
-	Final = True
+	final = True
 	iterador = 0
-	while (Final):
-		Turno_parte_1 = parejas_por_ciudad(Lista_de_jugadores)
+	while (final):
+		Turno_parte_1 = emparejamientoPorRegion(Lista_de_jugadores)
 		lista_de_parejas = Turno_parte_1[0]
-		Turno_parte_2 = emparejamientosSobrantes(Turno_parte_1[1],Diccionario_de_distancias,n)
+		Turno_parte_2 = emparejamientoSobrantes(Turno_parte_1[1],Diccionario_de_distancias,n)
 		lista_de_parejas += Turno_parte_2[0]
 		if lista_de_parejas == []:
-			Final = False
+			final = False
 		lista_sobrevivientes = combate(lista_de_parejas,archivo)
 		lista_sobrevivientes += Turno_parte_2[1]
 		Lista_de_jugadores = dividirPorRegion(lista_sobrevivientes)
 		iterador += 1
 	return lista_sobrevivientes
 
+
+# combate: List[Pareja] String -> List[Jugadores]
+# TOMA una lista de parejas de jugadores y el nombre del archivo donde se anotaran las jugadas.
+# DEVUELVE la lista de los jugadores que ganaron en dicha ronda.
 def combate(lista_parejas, archivo_resultado):
     lista_ganadores = []
     for pareja in lista_parejas:
@@ -221,10 +321,15 @@ def combate(lista_parejas, archivo_resultado):
         archivo_resultado.write(pareja[ganador][0] + " elimino a " + pareja[perdedor][0] + "\n")
     return lista_ganadores        
 
-def parejas_por_ciudad(Jugadores_Totales):
+
+# emparejamientoPorRegion: List[List[Jugadores]] -> (List[Pareja], List[Jugador])
+# TOMA una lista de listas jugadores.
+# DEVUELVE una tupla con una lista de parejas, y una lista de jugadores que quedaron sin pareja.
+def emparejamientoPorRegion(lista_jugadores):
+
 	lista_de_parejas = []
 	jugadores_sobrantes = []
-	for ciudad in Jugadores_Totales:
+	for ciudad in lista_jugadores:
 		while (len(ciudad) > 1):
 			jugador_1 = ciudad[random.randrange(len(ciudad))]
 			ciudad.remove(jugador_1)
@@ -233,11 +338,15 @@ def parejas_por_ciudad(Jugadores_Totales):
 			lista_de_parejas += [(jugador_1,jugador_2)]
 		if(len(ciudad) == 1):
 			jugadores_sobrantes += ciudad
+
 	return (lista_de_parejas,jugadores_sobrantes)
 
 
-# volver a meter a los jugadores en su sublista   
-def emparejamientosSobrantes(lista_jugadores_sobrantes, diccionario_distancias, n):
+# emparejamientoSobrantes: List[Jugador] DiccionarioDistancias Int -> (List[Pareja], List[Jugador])
+# TOMA una lista de jugadores.
+# DEVUELVE una tupla con una lista de parejas, y una lista de jugadores que quedaron sin pareja.
+def emparejamientoSobrantes(lista_jugadores_sobrantes, diccionario_distancias, n):
+
 	lista_parejas = []
 	sobrantes_de_las_sobras = []
 	cantidad_jugadores = len(lista_jugadores_sobrantes)  
@@ -265,7 +374,11 @@ def emparejamientosSobrantes(lista_jugadores_sobrantes, diccionario_distancias, 
 	return (lista_parejas, sobrantes_de_las_sobras)
 
 
+# preferenciaDistancias: Jugador List[Jugador] DiccionarioDistancias
+# Toma un jugador objetivo, una lista de jugadores y un diccionario de distancias.
+# Devuelve una lista con las distancias de cada jugador al objetivo.
 def preferenciaDistancias(objetivo, lista_jugadores, diccionario_distancias):
+
 	lista_distancias = []
 
 	for jugador in lista_jugadores:
@@ -281,7 +394,14 @@ def preferenciaDistancias(objetivo, lista_jugadores, diccionario_distancias):
 	return lista_distancias		
 
 
+# jugadorMasCercano: List[Jugador] List[Int] Int -> Int || Jugador
+# TOMA una lista de jugadores, una lista de enteros que representan distancias
+# y una distancia maxima posible.
+# EVALUA si la menor distancia de la lista es menor que la maxima distancia posible.
+# Si esto ocurre, devuelve el jugador correspondiente a dicha distancia.
+# Si no, devuelve un entero (0), representando que no tiene candidato.
 def jugadorMasCercano(lista_jugadores, lista_distancias, n):
+	
 	candidato = 0
 	menor_distancia = min(lista_distancias)
 	indice_menor_distancia = lista_distancias.index(menor_distancia)
@@ -292,84 +412,55 @@ def jugadorMasCercano(lista_jugadores, lista_distancias, n):
 
 
 
-#separarListaEdad: Lista[Jugadores] -> (Lista[Jugadores],Lista[Jugadores])
-# toma la lista de jugadores totales y retorna una tupla de los jugadores separados por edad
+# separarListaEdad: Lista[Jugadores] -> (Lista[Jugadores],Lista[Jugadores])
+# TOMA una lista de jugadores.
+# DEVUELVE una tupla con una lista de jugadores mayores de edad, y otra lista
+# con jugadores menores de edad.
 def separarListaEdad(lista):
-    listas_separadas = ([],[])
-    for jugador in lista:
-        if jugador[1] >= 18:
-            listas_separadas[0].append(jugador)
-        else:
-            listas_separadas[1].append(jugador)
-    return listas_separadas
+	listas_separadas = ([],[])
+	for jugador in lista:
+		if jugador[1] >= 18:
+			listas_separadas[0].append(jugador)
+		else:
+			listas_separadas[1].append(jugador)
+	return listas_separadas
 
 
-#crearListaJugadores: file -> Lista[Jugadores]
-#Recibe el archivo que contiene a todos los jugadores y devuelve una lista de tuplas que representan a cada jugador
-#Las tuplas son del formato (nombre: string,Edad: int,Ciudad: string)
+# crearListaJugadores: String -> Lista[Jugadores]
+# TOMA un string que representa el nombre del archivo 
+# que contiene la informacion sobre los jugadores.
+# DEVUEVLE una lista de jugadores.
 def crearListaJugadores(archivo_jugadores):
-    # Abrimos el archivo
+    
+	# Abrimos el archivo.
     archivo = open(archivo_jugadores,"r+")
-    # Creamos la lista que vamos a devolver
+    # Creamos la lista que vamos a devolver.
     lista_jugadores = []
 
-    # Recorremos el archivo por lineas
+    # Recorremos el archivo por lineas.
     for linea in archivo:
         
-        # Los datos del jugador estan separados por comas
+        # Los datos del jugador estan separados por comas.
         jugador = linea.split(",")
         
-        # Guardamos el nombre
+        # Guardamos el nombre.
         nombre = jugador[0]
         
-        # Guardamos la edad
+        # Guardamos la edad.
         edad = int(jugador[1])
         
         # Guardamos la ciudad sin el ultimo caracter que es una nueva linea '\n'
         ciudad = jugador[2][:-1]
         
-        # Creamos una tupla que contiene los datos de cada jugador y la almacenamos en la lista
+        # Creamos una tupla que contiene los datos de cada jugador y la almacenamos en la lista.
         lista_jugadores += [(nombre,edad,ciudad)]
     
-    # Cerramos el archivo
+    # Cerramos el archivo.
     archivo.close()
+
+	# Devolvemos la lista de jugadores.
     return lista_jugadores
 
-
-"""
-Comentarios sobre el codigo que solo estan para hacer presencia xdXdxD UwU
-
-La forma que yo note mezclando la manera en la que codeamos, es:
-las variables como
-nombre_variable
-
-y las funciones como
-nombreFuncion()
-
-Creo que es bastante legible, ¿que te parece?
-J- Se entiende perfectamente
-
-Pregunta:
-¿Deberiamos abrir el archivo resultante de texto una y otra vez a medida de que las rondas avanzan?
-J- Creo que podemos durante la funcion que determina con la lista de enfrentamientos quien gana y quien pierde, abrir el archivo al inicio de esa funcion 
-y cuando se calcula cada resultado escribir quien mato a quien y al final de esa funcion cerrarlo devuelta, asi solo lo abririamos y cerrariamos 6 veces
-1- para escribir juego de mayores
-2- para escribir las acciones (solo necesitariamos abrila 1 vez)
-3- para escribir ganadores de mayores
-4- escribir juego de menores
-5- escribir acciones
-6- escribir ganadores
-
-¿O podriamos guardar una lista con todas las jugadas y luego hacer una sola escritura?
-
-Respuesta acordada:
-Guardar un registro de las muertes con tuplas de dos elementos, la funcion torneo entonces
-debe devolver dos valores, los ganadores y el registro.
-Abrir una sola vez el archivo resultante y escribir todo.
-
-
-Me tengo que poner a hacer la signatura de las funciones que estoy re vago.
-"""
 
 
 main()
