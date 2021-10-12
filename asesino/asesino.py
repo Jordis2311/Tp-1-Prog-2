@@ -33,6 +33,14 @@ pero decidi dejarlas para que me responda?
 
 ¿Me recomienda algun libro para leer? (me quede sin preguntas jaja)
 
+Ezequiel Bisach
+Los cuatro acuerdos.
+
+Guimpel
+Los hermanos karamazoff
+El jugador
+
+
 #-----------------------------------#
 # Representacion de la informacion: #
 #-----------------------------------#
@@ -496,4 +504,6 @@ def mencionGanadores(lista_jugadores, archivo_resultado):
 	for jugador in lista_jugadores:
 		archivo_resultado.write(jugador[0] + ", ")
 
-main()
+
+if __name__ == "__main__":
+	main()
