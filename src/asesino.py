@@ -3,44 +3,6 @@
 # Last update: 12/10/2021
 
 """
-Espacio para explicar como hicimos todo :D
-
-Preguntas para Guimpel:
-¿Los argumentos que se pasan como script al programa cuentan como variables globales?
-
-En caso de que se de un enfrentamiento entre jugadores de diferentes regiones,
-¿deberia haber preferencia por distancia objetiva (general) entre todos los jugadores?
-
-¿Como se hace para que el programa ejecute el main directamente sin llamarlo?
-
-¿Esta bien abusar del hecho de que en el estilo imperativo podemos devolver muchas cosas
-con una sola funcion?
-
-¿Como es la signatura de las excepciones? (clases, buscar: ErrorParametros)
-¿Como es la signatura de los diccionarios?
-¿Como es la signatura de los archivos abiertos?
-
-¿Deberiamos haber separado las funciones en distintos archivos como haciamos en C?
-Me refiero a usar un archivo para la signatura, otro para la definicion, y otro para usar todo.
-
-¿Se puede modificar la forma en que un lenguaje esta hecho?
-Me refiero a romper las reglas de sintaxis que son evaluadas, o definir otras nuevas.
-
-¿Esta al tanto de que tranquilamente deberia haber googleado todas estas preguntas
-pero decidi dejarlas para que me responda?
-
-¿Alguna vez jugo este mismo juego en la vida real?
-
-¿Me recomienda algun libro para leer? (me quede sin preguntas jaja)
-
-Ezequiel Bisach
-Los cuatro acuerdos.
-
-Guimpel
-Los hermanos karamazoff
-El jugador
-
-
 #-----------------------------------#
 # Representacion de la informacion: #
 #-----------------------------------#
@@ -53,7 +15,7 @@ Donde:
 La primera componente representa el nombre de una region.
 La segunda componente representa el nombre de una region.
 La tercera componente representa la distancia entre ambas regiones.
-(¿Unidad? Kilometros, milimetros, codos)
+
 
 Para facilitar el acceso a las distancias entre regiones
 creamos un diccionario anidado de la siguiente forma:
@@ -84,29 +46,6 @@ Pareja == (Jugador, Jugador)
 
 Donde:
 Ya sabemos que representa jajaja.
-
-
-#---------#
-# Errores #
-#---------#
-
-Si, si lo se, no hay ni un solo test, esta mal, esta horrible y seguro nos va a dar con un caño
-cuando vea que no testeamos ni una sola de las funciones, pero con algo de esfuerzo
-quiza llegue a testear todo mañana en la mañana antes de la consulta.
-
-Hay un error por el cual si el N ingresado es muy alto (1000) los enfrentamientos
-continuan hasta que no hay jugadores. El ulitmo jugador se enfrenta a si mismo y se suicida.
-
-Hay que corregir la signatura de los archivo_resultado, no son string, no se que son.
-
-Decidimos esto y aquello, tambien esta otra cosa.
-
-
-blablabla
-blabla
-blabla bla bla
-
-blablablabla
 
 
 #----------#
@@ -242,7 +181,7 @@ def parametroN():
 	desicion = ""
 	while desicion != "1":
 		n = int(input("Ingrese la distancia maxima a la que puede producirse un enfrentamiento: "))
-		desicion = input("El numero ingresado sera: " + str(n) + " ¿Esta seguro?\n[1] Si.\n[2] No.\n" )
+		desicion = input("El numero ingresado sera: " + str(n) + "Esta seguro?\n[1] Si.\n[2] No.\n")
 	return n
 
 
@@ -429,12 +368,12 @@ def preferenciaDistancias(objetivo, lista_jugadores, diccionario_distancias):
 	return lista_distancias
 
 
-# jugadorMasCercano: List[Jugador] List[Int] Int -> Int || Jugador
+# jugadorMasCercano: List[Jugador] List[Int] Int -> Jugador
 # TOMA una lista de jugadores, una lista de enteros que representan distancias
 # y una distancia maxima posible.
 # EVALUA si la menor distancia de la lista es menor o igual que la maxima distancia posible.
 # Si esto ocurre, devuelve el jugador correspondiente a dicha distancia.
-# Si no, devuelve un jugador nulo
+# Si no, devuelve un jugador vacio, indicando que no tiene ningun candidato.
 def jugadorMasCercano(lista_jugadores, lista_distancias, n):
 
 	candidato = ("",0,"")
@@ -497,12 +436,24 @@ def crearListaJugadores(archivo_jugadores):
     return lista_jugadores
 
 
-# mencionGanadores: List[Jugador] -> None
+# mencionGanadores: List[Jugador] File -> None
 # TOMA una lista de jugadores y un archivo donde se escribira su mencion.
 def mencionGanadores(lista_jugadores, archivo_resultado):
+	
+	longitud_lista = len(lista_jugadores)
+	iterador = 0
+
 	archivo_resultado.write("\n\nLos siguientes jugadores ganaron en su region:\n\n")
-	for jugador in lista_jugadores:
-		archivo_resultado.write(jugador[0] + ", ")
+	while iterador < longitud_lista:
+		archivo_resultado.write(lista_jugadores[iterador][0])
+		if iterador + 1 != longitud_lista:
+			archivo_resultado.write(", ")
+		iterador += 1
+	archivo_resultado.write(".")
+
+
+	
+		
 
 
 if __name__ == "__main__":
