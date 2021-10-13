@@ -46,10 +46,10 @@ def test_jugadorMasCercano():
     assert jugadorMasCercano(lista_mixta, [1,4,0,2,6], 10) == lista_mixta[2]
     assert jugadorMasCercano(lista_mixta, [1,1,5,2,6], 10) == lista_mixta[0]
 
-
 def test_emparejamientoPorRegion():
     assert emparejamientoPorRegion([]) == ([],[])
-    assert emparejamientoPorRegion([[juan,pedro]]) == ([(juan,pedro)],[]) or emparejamientoPorRegion([[juan,pedro]]) == ([(pedro,juan)],[])
+    resultado = emparejamientoPorRegion([[juan,pedro]])
+    assert resultado == ([(juan,pedro)],[]) or resultado == ([(pedro,juan)],[])
 
 
 # Las demas funciones son poco eficientes de testear ya que, o bien manipulan
