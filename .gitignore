@@ -1,3 +1,6 @@
 juego_del_asesino.txt
 juego_del_asesino*
 test.txt
+pytest*
+.pytest*
+__init__*
