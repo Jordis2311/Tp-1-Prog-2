@@ -132,7 +132,7 @@ def main():
 	lista_ganadores_mayores = juegoDelAsesino(lista_jugadores_mayores_region, diccionario_distancias, n, archivo_resultado)
 	mencionGanadores(lista_ganadores_mayores, archivo_resultado)
 
-	# Juego de los menoes.
+	# Juego de los menores.
 	archivo_resultado.write("\n\nMenores de edad\n\n")
 	lista_ganadores_menores = juegoDelAsesino(lista_jugadores_menores_region, diccionario_distancias, n, archivo_resultado)
 	mencionGanadores(lista_ganadores_menores, archivo_resultado)
@@ -181,7 +181,7 @@ def parametroN():
 	desicion = ""
 	while desicion != "1":
 		n = int(input("Ingrese la distancia maxima a la que puede producirse un enfrentamiento: "))
-		desicion = input("El numero ingresado sera: " + str(n) + "Esta seguro?\n[1] Si.\n[2] No.\n")
+		desicion = input("El numero ingresado sera: " + str(n) + ". Esta seguro?\n[1] Si.\n[2] No.\n")
 	return n
 
 
@@ -236,21 +236,21 @@ def crearListaDistancias(archivo_distancias):
 def crearDiccionarioDistancias(lista_distancias):
 
 	lista_diccionarios = []
-	region = ""
-	# Empieza en -1 ya que la primera vez que se ejecute sera siempre nuevo y seteara a 0.
-	iterador = -1
+	iterador = 0
+	regiones = {}
 
 	for distancia in lista_distancias:
 
-		# Si la region no esta en la lista la agrega y crea su diccionario.
-		if region != distancia[0]:
-			lista_diccionarios += [(distancia[0], dict([(distancia[1],distancia[2])]))]
-			region = distancia[0]
-			iterador += 1
-
 		# Si la region ya esta en la lista, actualiza su diccionario con el nuevo valor.
+		if distancia[0] in regiones:
+			lista_diccionarios[regiones[distancia[0]]][1].update([(distancia[1],distancia[2])])
+			
+		# Si la region no esta en la lista la agrega y crea su diccionario.
 		else:
-			lista_diccionarios[iterador][1].update([(distancia[1],distancia[2])])
+
+			lista_diccionarios += [(distancia[0], dict([(distancia[1],distancia[2])]))]
+			regiones.update([(distancia[0],iterador)])
+			iterador += 1
 
 	# Creamos un diccionario con los diccionarios de cada region.
 	return dict(lista_diccionarios)
